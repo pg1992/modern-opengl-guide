@@ -48,6 +48,11 @@ int main()
                 // end the program
                 running = false;
             }
+            else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
+            {
+                if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
+                    running = false;
+            }
             else if (const auto* resized = event->getIf<sf::Event::Resized>())
             {
                 // adjust the viewport when the window is resized
