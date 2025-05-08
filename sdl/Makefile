@@ -1,0 +1,5 @@
+main: main.o
+	gcc main.o -o main -lSDL3
+
+main.o: main.c
+	gcc -c main.c

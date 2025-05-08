@@ -1,2 +1,4 @@
 sfml-app
 *.o
+main
+*.bmp
