@@ -1,5 +1,5 @@
 sfml-app: main.o
-	g++ main.o -o sfml-app -lsfml-system -lsfml-window
+	g++ main.o -o sfml-app -lsfml-system -lsfml-window -lGL
 
 main.o: main.cpp
 	g++ -c main.cpp
