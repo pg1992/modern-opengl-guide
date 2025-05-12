@@ -34,7 +34,10 @@ int main()
     window.setVerticalSyncEnabled(true);
 
     // activate the window
-    window.setActive(true);
+    if (!window.setActive(true)) {
+        std::cerr << "Failed to activate window!\n";
+        return -1;
+    }
 
     // run the main loop
     bool running = true;
