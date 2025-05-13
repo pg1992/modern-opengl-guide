@@ -8,9 +8,13 @@
 
 static const float vertices[] =
 {
-     0.0f,  0.5f, 1.0f, 0.0f, 0.0f,  // Vertex 1: Red
-     0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // Vertex 2: Green
-    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f,  // Vertex 3: Blue
+    -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  // Top-left
+     0.5f,  0.5f, 0.0f, 1.0f, 0.0f,  // Top-right
+     0.5f, -0.5f, 0.0f, 0.0f, 1.0f,  // Bottom-right
+
+     0.5f, -0.5f, 0.0f, 0.0f, 1.0f,  // Bottom-right
+    -0.5f, -0.5f, 1.0f, 1.0f, 1.0f,  // Bottom-left
+    -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  // Top-left
 };
 
 int main()
@@ -164,7 +168,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // draw...
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
 
         // end the current frame (internally swaps the front and back buffers)
         window.display();
