@@ -11,10 +11,12 @@ static const float vertices[] =
     -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  // Top-left
      0.5f,  0.5f, 0.0f, 1.0f, 0.0f,  // Top-right
      0.5f, -0.5f, 0.0f, 0.0f, 1.0f,  // Bottom-right
-
-     0.5f, -0.5f, 0.0f, 0.0f, 1.0f,  // Bottom-right
     -0.5f, -0.5f, 1.0f, 1.0f, 1.0f,  // Bottom-left
-    -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  // Top-left
+};
+
+static const GLuint elements[] = {
+    0, 1, 2,
+    2, 3, 0,
 };
 
 int main()
@@ -60,6 +62,11 @@ int main()
     glGenBuffers(1, &vbo);  // Generate 1 buffer
     glBindBuffer(GL_ARRAY_BUFFER, vbo);  // make it the active object
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);  // copy the data
+
+    GLuint ebo;
+    glGenBuffers(1, &ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 
     // Vertex Shader Source
     const char* vertex_shader_source = R"glsl(
@@ -168,7 +175,8 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // draw...
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        //glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // end the current frame (internally swaps the front and back buffers)
         window.display();
