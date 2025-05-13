@@ -8,9 +8,9 @@
 
 static const float vertices[] =
 {
-     0.0f,  0.5f,  // Vertex 1 (X, Y)
-     0.5f, -0.5f,  // Vertex 2 (X, Y)
-    -0.5f, -0.5f,  // Vertex 3 (X, Y)
+     0.0f,  0.5f, 1.0f, 0.0f, 0.0f,  // Vertex 1: Red
+     0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // Vertex 2: Green
+    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f,  // Vertex 3: Blue
 };
 
 int main()
@@ -62,9 +62,13 @@ int main()
         #version 150 core
 
         in vec2 position;
+        in vec3 color;
+
+        out vec3 Color;
 
         void main()
         {
+            Color = color;
             gl_Position = vec4(position, 0.0, 1.0);
         }
     )glsl";
@@ -87,11 +91,13 @@ int main()
     const char* fragment_shader_source = R"glsl(
         #version 150 core
 
+        in vec3 Color;
+
         out vec4 outColor;
 
         void main()
         {
-            outColor = vec4(1.0, 1.0, 1.0, 1.0);
+            outColor = vec4(Color, 1.0);
         }
     )glsl";
 
@@ -123,8 +129,12 @@ int main()
 
     // Making the link between vertex data and attributes
     GLint posAttrib = glGetAttribLocation(shader_program, "position");
-    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), 0);
     glEnableVertexAttribArray(posAttrib);
+
+    GLint colorAttrib = glGetAttribLocation(shader_program, "color");
+    glVertexAttribPointer(colorAttrib, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(2*sizeof(float)));
+    glEnableVertexAttribArray(colorAttrib);
 
     // run the main loop
     bool running = true;
