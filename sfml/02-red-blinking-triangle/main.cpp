@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cmath>
+#include <chrono>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -13,8 +15,34 @@ static const float vertices[] =
     -0.5f, -0.5f,  // Vertex 3 (X, Y)
 };
 
+// Vertex Shader Source
+const GLchar* vertex_shader_source = R"glsl(
+    #version 150 core
+    in vec2 position;
+    void main()
+    {
+        gl_Position = vec4(position, 0.0, 1.0);
+    }
+)glsl";
+
+// Fragment Shader Source
+const char* fragment_shader_source = R"glsl(
+    #version 150 core
+
+    uniform vec3 triangleColor;
+
+    out vec4 outColor;
+
+    void main()
+    {
+        outColor = vec4(triangleColor, 1.0);
+    }
+)glsl";
+
 int main()
 {
+    auto t_start = std::chrono::high_resolution_clock::now();
+
     sf::ContextSettings settings;
     settings.depthBits = 24;
     settings.stencilBits = 8;
@@ -57,18 +85,6 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, vbo);  // make it the active object
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);  // copy the data
 
-    // Vertex Shader Source
-    const char* vertex_shader_source = R"glsl(
-        #version 150 core
-
-        in vec2 position;
-
-        void main()
-        {
-            gl_Position = vec4(position, 0.0, 1.0);
-        }
-    )glsl";
-
     // Create a shader object
     GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
@@ -82,18 +98,6 @@ int main()
         std::cerr << "Vertex Shader compilation error: " << buffer << std::endl;
         return -1;
     }
-
-    // Fragment Shader Source
-    const char* fragment_shader_source = R"glsl(
-        #version 150 core
-
-        out vec4 outColor;
-
-        void main()
-        {
-            outColor = vec4(1.0, 1.0, 1.0, 1.0);
-        }
-    )glsl";
 
     // Create a shader object
     GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -126,6 +130,9 @@ int main()
     glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(posAttrib);
 
+    // Get the location of the color uniform
+    GLint uniColor = glGetUniformLocation(shader_program, "triangleColor");
+
     // run the main loop
     bool running = true;
     while (running)
@@ -150,7 +157,13 @@ int main()
             }
         }
 
+        auto t_now = std::chrono::high_resolution_clock::now();
+        float time = std::chrono::duration_cast<std::chrono::duration<float>>(t_now - t_start).count();
+
+        glUniform3f(uniColor, (std::sin(time * 4.0f) + 1.0f) / 2.0f, 0.0f, 0.0f);
+
         // clear the buffers
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // draw...
@@ -160,7 +173,15 @@ int main()
         window.display();
     }
 
-    // release resources...
+    glDeleteProgram(shader_program);
+    glDeleteShader(fragment_shader);
+    glDeleteShader(vertex_shader);
+
+    glDeleteBuffers(1, &vbo);
+
+    glDeleteVertexArrays(1, &vao);
+
+    window.close();
 
     return 0;
 }
